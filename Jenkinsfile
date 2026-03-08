@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION      = 'us-east-1'
-        ECR_REGISTRY    = '493588233491.dkr.ecr.us-east-1.amazonaws.com/jenkishivu'
-        ECR_REPO        = 'jenkishivu'
-        IMAGE_TAG       = "${BUILD_NUMBER}"
+        AWS_REGION   = 'us-east-1'
+        ECR_REGISTRY = '493588233491.dkr.ecr.us-east-1.amazonaws.com'
+        ECR_REPO     = 'jenkishivu'
+        IMAGE_TAG    = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -43,23 +43,22 @@ pipeline {
             }
         }
 
-        stage('Clean Up Local Image') {
+        stage('Clean Up') {
             steps {
                 sh """
-                    docker rmi ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}
-                    docker rmi ${ECR_REGISTRY}/${ECR_REPO}:latest
+                    docker rmi ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG} || true
+                    docker rmi ${ECR_REGISTRY}/${ECR_REPO}:latest || true
                 """
             }
         }
-
     }
 
     post {
         success {
-            echo "✅ Image pushed: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}"
+            echo "✅ Build and Push Successful!"
         }
         failure {
-            echo "❌ Build Failed — check logs above!"
+            echo "❌ Build Failed!"
         }
     }
 }
